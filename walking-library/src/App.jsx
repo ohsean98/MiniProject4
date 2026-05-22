@@ -177,7 +177,7 @@ export default function App() {
           author,
           content,
           coverImageUrl: "",
-          createdAt: nowISO, // 최초 생성 시각
+          createdAt: nowISO, // 최초 생성 시각 !
           updatedAt: nowISO,
         }),
       });
