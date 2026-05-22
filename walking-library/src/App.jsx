@@ -6,14 +6,17 @@ import BookDetail from "./components/BookDetail";
 
 const OPENAI_IMAGE_API_URL = "https://api.openai.com/v1/images/generations";
 
-function buildBookCoverPrompt(book) {
+function buildBookCoverPrompt(book, bookGenre, coverStyle) {
   return [
     "Create a polished vertical book cover illustration.",
     "Use an artistic, publication-ready style suitable for a Korean creative writing app.",
+    `Genre: ${bookGenre}`,
+    `Cover style: ${coverStyle}`,
     `Title: ${book.title}`,
     `Author: ${book.author}`,
     `Book content: ${book.content}`,
-    "The cover should visually reflect the mood and core theme of the book.",
+    "The cover should visually reflect the selected genre, mood, and core theme of the book.",
+    "Apply the selected cover style clearly while keeping the result suitable for a finished book cover.",
     "If text is included, keep it minimal and legible.",
     "Do not include mockup borders, UI elements, watermarks, or extra explanation.",
   ].join("\n");
@@ -47,6 +50,8 @@ export default function App() {
   const [imageSize, setImageSize] = useState("1024x1536");
   const [imageQuality, setImageQuality] = useState("low");
   const [outputFormat, setOutputFormat] = useState("png");
+  const [bookGenre, setBookGenre] = useState("실용서적");
+  const [coverStyle, setCoverStyle] = useState("미니멀");
   const [isGeneratingCover, setIsGeneratingCover] = useState(false);
   const [coverError, setCoverError] = useState("");
 
@@ -85,7 +90,7 @@ export default function App() {
     setCoverError("");
 
     try {
-      const prompt = buildBookCoverPrompt(book);
+      const prompt = buildBookCoverPrompt(book, bookGenre, coverStyle);
 
       const openAiRes = await fetch(OPENAI_IMAGE_API_URL, {
         method: "POST",
@@ -256,6 +261,10 @@ export default function App() {
           setImageQuality={setImageQuality}
           outputFormat={outputFormat}
           setOutputFormat={setOutputFormat}
+          bookGenre={bookGenre}
+          setBookGenre={setBookGenre}
+          coverStyle={coverStyle}
+          setCoverStyle={setCoverStyle}
           isGeneratingCover={isGeneratingCover}
           coverError={coverError}
           onGenerateCover={handleGenerateCover}

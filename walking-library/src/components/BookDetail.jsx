@@ -13,6 +13,10 @@ export default function BookDetail({
   setImageQuality,
   outputFormat,
   setOutputFormat,
+  bookGenre,
+  setBookGenre,
+  coverStyle,
+  setCoverStyle,
   isGeneratingCover,
   coverError,
   onGenerateCover,
@@ -113,6 +117,40 @@ export default function BookDetail({
               </div>
 
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px", marginBottom: "10px" }}>
+                <div>
+                  <label style={labelStyle} htmlFor="book-genre">
+                    장르
+                  </label>
+                  <select
+                    id="book-genre"
+                    value={bookGenre}
+                    onChange={(e) => setBookGenre(e.target.value)}
+                    style={inputStyle}
+                  >
+                    <option value="실용서적">실용서적</option>
+                    <option value="판타지">판타지</option>
+                    <option value="고전문학">고전문학</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label style={labelStyle} htmlFor="cover-style">
+                    표지 스타일
+                  </label>
+                  <select
+                    id="cover-style"
+                    value={coverStyle}
+                    onChange={(e) => setCoverStyle(e.target.value)}
+                    style={inputStyle}
+                  >
+                    <option value="미니멀">미니멀</option>
+                    <option value="일러스트">일러스트</option>
+                    <option value="빈티지">빈티지</option>
+                    <option value="현대적">현대적</option>
+                    <option value="동화풍">동화풍</option>
+                  </select>
+                </div>
+
                 <div>
                   <label style={labelStyle} htmlFor="image-model">
                     모델
