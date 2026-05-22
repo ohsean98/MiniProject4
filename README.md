@@ -1,4 +1,4 @@
 # mini-project4-library
-미니프로젝트4차 도서검색
+도서 관리 웹 서비스 프로젝트
 
 test
