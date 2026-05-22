@@ -1,7 +1,27 @@
-export default function BookList({ books, selectedBook, onSelectBook }) {
+export default function BookList({
+  books,
+  selectedBook,
+  onSelectBook,
+  emptyMessage = "등록된 도서가 없습니다.",
+}) {
   return (
     <section style={{ flex: 1 }}>
       <h3 style={{ marginTop: 0 }}>📖 나의 도서 목록 ({books.length}권)</h3>
+      {books.length === 0 && (
+        <p
+          style={{
+            margin: 0,
+            padding: "18px",
+            border: "1px dashed #ccc",
+            borderRadius: "6px",
+            color: "#777",
+            textAlign: "center",
+            background: "#fafafa",
+          }}
+        >
+          {emptyMessage}
+        </p>
+      )}
       {books.map((book) => {
         const isCurrent = selectedBook?.id === book.id;
         

@@ -3,6 +3,7 @@ import Header from "./components/Header";
 import BookForm from "./components/BookForm";
 import BookList from "./components/BookList";
 import BookDetail from "./components/BookDetail";
+import SearchBar from "./components/SearchBar";
 
 const OPENAI_IMAGE_API_URL = "https://api.openai.com/v1/images/generations";
 
@@ -36,6 +37,28 @@ function getOpenAiErrorMessage(status, payload) {
   return apiMessage || `OpenAI 요청에 실패했습니다. (status: ${status})`;
 }
 
+function normalizeSearchText(value) {
+  return value.trim().toLocaleLowerCase("ko-KR");
+}
+
+function startsWithSearchKeyword(value, keyword) {
+  return normalizeSearchText(value || "").startsWith(keyword);
+}
+
+function filterBooksByPrefix(books, searchKeyword) {
+  const keyword = normalizeSearchText(searchKeyword);
+
+  if (!keyword) {
+    return books;
+  }
+
+  return books.filter(
+    (book) =>
+      startsWithSearchKeyword(book.title, keyword) ||
+      startsWithSearchKeyword(book.author, keyword)
+  );
+}
+
 export default function App() {
   const dbAddress = "http://localhost:3000/books";
 
@@ -43,6 +66,7 @@ export default function App() {
   const [title, setTitle] = useState("");
   const [author, setAuthor] = useState("");
   const [content, setContent] = useState("");
+  const [searchKeyword, setSearchKeyword] = useState("");
   const [selectedBook, setSelectedBook] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
   const [apiKey, setApiKey] = useState("");
@@ -223,6 +247,9 @@ export default function App() {
     setCoverError("");
   };
 
+  const filteredBooks = filterBooksByPrefix(books, searchKeyword);
+  const hasSearchKeyword = searchKeyword.trim().length > 0;
+
   return (
     <div style={{ padding: "20px", maxWidth: "900px", margin: "0 auto", fontFamily: "sans-serif" }}>
       <Header />
@@ -239,11 +266,23 @@ export default function App() {
         onCancel={cancelEdit}
       />
 
+      <SearchBar
+        value={searchKeyword}
+        onChange={setSearchKeyword}
+        resultCount={filteredBooks.length}
+        totalCount={books.length}
+      />
+
       <div style={{ display: "flex", gap: "20px", alignItems: "flex-start" }}>
         <BookList 
-          books={books} 
+          books={filteredBooks} 
           selectedBook={selectedBook} 
           onSelectBook={handleSelectBook} 
+          emptyMessage={
+            hasSearchKeyword
+              ? "검색어로 시작하는 책이나 작가를 찾지 못했습니다."
+              : "등록된 도서가 없습니다."
+          }
         />
         
         <BookDetail 
