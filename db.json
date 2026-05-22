@@ -1,0 +1,40 @@
+{
+  "books": [
+    {
+      "id": 1,
+      "title": "별빛 아래의 서점",
+      "author": "홍길동",
+      "content": "작은 마을 서점의 1년을 담은 에세이.",
+      "coverImageUrl": "",
+      "createdAt": "2026-04-24T09:00:00.000Z",
+      "updatedAt": "2026-04-24T09:00:00.000Z"
+    },
+    {
+      "title": "미니프로젝트",
+      "author": "오승헌",
+      "content": "미프4차",
+      "coverImageUrl": "",
+      "createdAt": "2026-05-22T01:31:45.985Z",
+      "updatedAt": "2026-05-22T01:31:45.985Z",
+      "id": 2
+    },
+    {
+      "title": "ㅁㄴㅇ",
+      "author": "오승헌",
+      "content": "ㅁㄴㅗㅗㅗㅗㅗㅗㅗㅗㅗ",
+      "coverImageUrl": "",
+      "createdAt": "2026-05-22T02:09:10.073Z",
+      "updatedAt": "2026-05-22T02:34:32.354Z",
+      "id": 3
+    },
+    {
+      "title": "홍길동",
+      "author": "조현우",
+      "content": "홍길동이 모험하는 내용",
+      "coverImageUrl": "",
+      "createdAt": "2026-05-22T02:34:16.912Z",
+      "updatedAt": "2026-05-22T02:34:16.912Z",
+      "id": 4
+    }
+  ]
+}
