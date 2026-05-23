@@ -49,6 +49,11 @@ export default function App() {
   const [outputFormat, setOutputFormat] = useState("png");
   const [isGeneratingCover, setIsGeneratingCover] = useState(false);
   const [coverError, setCoverError] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
+
+  const filteredBooks = books.filter(book =>
+    book.title.includes(searchTerm) || book.author.includes(searchTerm)
+  );
 
   const fetchBooks = async () => {
     const res = await fetch(dbAddress);
@@ -220,7 +225,7 @@ export default function App() {
 
   return (
     <div style={{ padding: "20px", maxWidth: "900px", margin: "0 auto", fontFamily: "sans-serif" }}>
-      <Header />
+      <Header searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
       
       <BookForm 
         title={title}
@@ -236,7 +241,7 @@ export default function App() {
 
       <div style={{ display: "flex", gap: "20px", alignItems: "flex-start" }}>
         <BookList 
-          books={books} 
+          books={filteredBooks} 
           selectedBook={selectedBook} 
           onSelectBook={handleSelectBook} 
         />
