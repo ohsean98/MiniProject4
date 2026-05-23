@@ -211,7 +211,7 @@ export default function BookDetail({
           <h4 style={{ fontSize: "18px", margin: "10px 0 5px 0" }}>{selectedBook.title}</h4>
           <p style={{ fontSize: "14px", color: "#555", margin: "0 0 10px 0" }}>저자: {selectedBook.author}</p>
           <p style={{ fontSize: "12px", color: "#888", marginBottom: "15px" }}>
-            작성일: {selectedBook.createdAt} | 수정일: {selectedBook.updatedAt}
+            작성일: {(new Date(selectedBook.createdAt)).toLocaleDateString("ko-KR")} | 수정일: {(new Date(selectedBook.updatedAt)).toLocaleDateString("ko-KR")}
           </p>
           <p style={{ whiteSpace: "pre-wrap", background: "#f8f9fa", padding: "12px", borderRadius: "4px", border: "1px solid #edf2f7", lineHeight: "1.5" }}>
             {selectedBook.content}

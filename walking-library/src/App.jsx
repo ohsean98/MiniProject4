@@ -3,6 +3,7 @@ import Header from "./components/Header";
 import BookForm from "./components/BookForm";
 import BookList from "./components/BookList";
 import BookDetail from "./components/BookDetail";
+import BookRecommend from "./components/BookRecommend";
 
 const OPENAI_IMAGE_API_URL = "https://api.openai.com/v1/images/generations";
 
@@ -54,6 +55,8 @@ export default function App() {
   const filteredBooks = books.filter(book =>
     book.title.includes(searchTerm) || book.author.includes(searchTerm)
   );
+
+  const latestBook = books[books.length -1];
 
   const fetchBooks = async () => {
     const res = await fetch(dbAddress);
@@ -238,6 +241,8 @@ export default function App() {
         onSave={handleSave}
         onCancel={cancelEdit}
       />
+
+      <BookRecommend latestBook={latestBook}/>
 
       <div style={{ display: "flex", gap: "20px", alignItems: "flex-start" }}>
         <BookList 

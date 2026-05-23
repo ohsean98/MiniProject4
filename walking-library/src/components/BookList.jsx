@@ -21,7 +21,7 @@ export default function BookList({ books, selectedBook, onSelectBook }) {
             }}
           >
             <strong style={{ display: "block", marginBottom: "5px" }}>{book.title}</strong>
-            <div style={{ fontSize: "12px", color: "#666" }}>등록일: {book.createdAt}</div>
+            <div style={{ fontSize: "12px", color: "#666" }}>등록일: {(new Date(book.createdAt)).toLocaleDateString("ko-KR")}</div>
           </div>
         );
       })}
