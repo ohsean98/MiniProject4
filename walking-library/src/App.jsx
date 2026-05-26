@@ -81,9 +81,9 @@ export default function App() {
   const [coverError, setCoverError] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
 
-  const filteredBooks = books.filter(book =>
-    book.title.includes(searchTerm) || book.author.includes(searchTerm)
-  );
+  // const filteredBooks = books.filter(book =>
+  //   book.title.includes(searchTerm) || book.author.includes(searchTerm)
+  // );
 
   const latestBook = books[books.length -1];
 
@@ -281,6 +281,8 @@ export default function App() {
         selectedBook={selectedBook}
         onSelectBook={handleSelectBook}
         horizontal={true}
+      />
+      
       <SearchBar
         value={searchKeyword}
         onChange={setSearchKeyword}
