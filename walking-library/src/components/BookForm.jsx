@@ -18,15 +18,9 @@ export default function BookForm({
   bookGenre, setBookGenre,
   coverStyle, setCoverStyle,
   isEditing, onSave, onFinalSave, onCancel,
-<<<<<<< HEAD
   isGenerating, onCancelGeneration,
   tempPreviewImage, setTempPreviewImage,
   localImageBase64, setLocalImageBase64
-=======
-  isGenerating, onCancelGeneration, 
-  tempPreviewImage, setTempPreviewImage,
-   setLocalImageBase64
->>>>>>> origin/dev
 }) {
   const [localPreview, setLocalPreview] = useState(null);
 
@@ -108,13 +102,7 @@ export default function BookForm({
             {/* AI 이미지 생성 완료 혹은 로컬 파일이 있을 때 검토*/}
             {tempPreviewImage ? (
               <img src={tempPreviewImage} alt="표지 미리보기" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-<<<<<<< HEAD
             ):(
-=======
-            ) : localPreview ? (
-              <img src={localPreview} alt="로컬 파일 미리보기" style={{ width: "100%", height: "100%", objectFit: "contain" }} />
-            ) : (
->>>>>>> origin/dev
               <>
                 <span style={{ fontSize: "40px", marginBottom: "10px" }}>🖼️</span>
                 <strong style={{ fontSize: "16px", color: "#333", marginBottom: "5px" }}>생성 이미지 표시</strong>
@@ -128,7 +116,6 @@ export default function BookForm({
 
           {/*미리보기 이미지가 없을 때만 일반 파일 선택 창 노출 */}
           {!tempPreviewImage && (
-<<<<<<< HEAD
             <div style={{ 
               width: "100%", 
               height: "250px", 
@@ -194,16 +181,6 @@ export default function BookForm({
                 )}
             </div>
           )}
-=======
-            <div style={{ width: "100%", border: "1px solid #ddd", borderRadius: "8px", padding: "15px", background: "#fdfdfd", boxSizing: "border-box" }}>
-              <label style={{ display: "block", fontSize: "13px", fontWeight: "bold", color: "#555", marginBottom: "8px" }}>
-                🖼️ 원하는 도서 이미지 업로드 (API Key 없을 때 적용)
-              </label>
-              <input type="file" accept="image/*" onChange={handleLocalImageChange} style={{ fontSize: "13px", width: "100%" }} />
-            </div>
-          )}
-
->>>>>>> origin/dev
           
           {tempPreviewImage && (
             <div style={{ display: "flex", flexDirection: "column", gap: "10px", background: "#f4f9ff", padding: "15px", borderRadius: "8px", border: "1px solid #bae1ff" }}>
@@ -345,13 +322,8 @@ export default function BookForm({
                   <label style={{ fontSize: "12px", color: "#444" }}>이미지 품질</label>
                   <select value={imageQuality} onChange={(e) => setImageQuality(e.target.value)} disabled={!!tempPreviewImage} style={{ padding: "8px", borderRadius: "4px", border: "1px solid #ccc", background: "#fff", fontSize: "13px" }}>
                     <option value="low">low (빠른 생성)</option>
-<<<<<<< HEAD
                     <option value="medium">medium (고화질)</option>medium
                     <option value="high">high (일반)</option>high
-=======
-                    <option value="high">high (고화질)</option>
-                    <option value="medium">medium (일반)</option>
->>>>>>> origin/dev
                   </select>
                 </div>
                 <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: "4px" }}>
@@ -378,19 +350,11 @@ export default function BookForm({
                 <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: "4px" }}>
                   <label style={{ fontSize: "12px", color: "#444" }}>표지 무드/스타일</label>
                   <select value={coverStyle} onChange={(e) => setCoverStyle(e.target.value)} disabled={!!tempPreviewImage} style={{ padding: "8px", borderRadius: "4px", border: "1px solid #ccc", background: "#fff", fontSize: "13px" }}>
-<<<<<<< HEAD
                     <option value="Modern Korean webtoon style, crisp digital line art, dynamic manhwa character illustration">웹툰</option>
                     <option value="High-quality Japanese anime style, dark fantasy atmosphere, cinematic cel-shading">애니메이션</option>
                     <option value="일러스트">일러스트</option>
                     <option value="수채화">수채화</option>
                     <option value="Photorealistic, real human photography style, highly detailed portrait, 8k resolution">실사화</option>
-=======
-                    <option value="미니멀">미니멀</option>
-                    <option value="일러스트">일러스트</option>
-                    <option value="수채화">수채화</option>
-                    <option value="사이버펑크">사이버펑크</option>
-                    <option value="클래식">클래식</option>
->>>>>>> origin/dev
                   </select>
                 </div>
               </div>

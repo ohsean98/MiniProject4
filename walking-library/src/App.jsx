@@ -1,13 +1,7 @@
 //1.npm install로 의존성 설치
 //2. npm run dev로 vite 페이지 실행
-<<<<<<< HEAD
 //3. npm install json-server@0.17.4로 json서버 의존성 설치
 //4. npx json-server --watch db.json으로 json 서버 실행
-=======
-//3. walking-library 폴더 안에서 다음 내용 실행
-//4. npm install json-server@0.17.4로 json서버 의존성 설치
-//5. npx json-server --watch db.json으로 json 서버 실행
->>>>>>> origin/dev
 
 /* - 상태 관리 (메뉴 탭, 도서 목록 데이터, AI API 세팅 변수, 검색어 등)
  * - json-server 및 OpenAI Image API 연동 및 제어
@@ -19,6 +13,7 @@ import { ToastContainer, toast, Bounce } from "react-toastify";
 import Header from "./components/Header";
 import BookForm from "./components/BookForm";
 import BookDetail from "./components/BookDetail";
+import "react-toastify/dist/ReactToastify.css";
 
 const OPENAI_IMAGE_API_URL = "https://api.openai.com/v1/images/generations";
 
@@ -102,11 +97,6 @@ export default function App() {
     }
   };
 
-<<<<<<< HEAD
-=======
-  // Initial book loading should run once when the app mounts.
-  // eslint-disable-next-line react-hooks/set-state-in-effect, react-hooks/exhaustive-deps
->>>>>>> origin/dev
   useEffect(() => { fetchBooks(); }, []);
 
   
@@ -132,7 +122,6 @@ export default function App() {
     abortControllerRef.current = controller;
 
     try {
-<<<<<<< HEAD
       let prompt = buildBookCoverPrompt(title, author, content, bookGenre, coverStyle);
       if (localImageBase64){
         const pureBase64 = localImageBase64.split(",")[1];
@@ -182,16 +171,6 @@ export default function App() {
         signal: controller.signal
       });
 
-=======
-      const prompt = buildBookCoverPrompt(title, author, content, bookGenre, coverStyle);
-      const openAiRes = await fetch(OPENAI_IMAGE_API_URL, {
-        method: "POST",
-        headers: { "Content-Type": "application/json", Authorization: `Bearer ${apiKey.trim()}` },
-        body: JSON.stringify({ model: imageModel, prompt, n: 1, size: imageSize, quality: imageQuality, output_format: outputFormat }),
-        signal: controller.signal
-      });
-
->>>>>>> origin/dev
       if (!openAiRes.ok) throw new Error("OpenAI 서버 응답 실패");
 
       const data = await openAiRes.json();
@@ -203,14 +182,8 @@ export default function App() {
     } catch (err) {
       if (err.name === 'AbortError') {
         console.log("이미지 생성 취소됨");
-<<<<<<< HEAD
       } else {
         alert(`에러: ${err.message}`);
-=======
-        toast.info("이미지 생성을 취소했습니다.");
-      } else {
-        toast.error(`표지 생성 실패: ${err.message}`);
->>>>>>> origin/dev
       }
     } finally {
       setIsGeneratingCover(false);
@@ -224,10 +197,7 @@ export default function App() {
 
   const handleFinalSave = async () => {
     const nowISO = new Date().toISOString();
-<<<<<<< HEAD
-=======
     const wasEditing = isEditing;
->>>>>>> origin/dev
     const payload = {
       title, author, content, genre: bookGenre, style: coverStyle,
       imageModel, imageSize, imageQuality, outputFormat,
@@ -237,33 +207,18 @@ export default function App() {
 
     try {
       if (isEditing) {
-<<<<<<< HEAD
         await fetch(`${dbAddress}/${selectedBook.id}`, {
-=======
-        const res = await fetch(`${dbAddress}/${selectedBook.id}`, {
->>>>>>> origin/dev
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ ...selectedBook, ...payload }),
         });
-<<<<<<< HEAD
         setIsEditing(false);
       } else {
         await fetch(dbAddress, {
-=======
-        if (!res.ok) throw new Error("도서 수정 요청에 실패했습니다.");
-        setIsEditing(false);
-      } else {
-        const res = await fetch(dbAddress, {
->>>>>>> origin/dev
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ ...payload, createdAt: nowISO }),
         });
-<<<<<<< HEAD
-=======
-        if (!res.ok) throw new Error("도서 등록 요청에 실패했습니다.");
->>>>>>> origin/dev
       }
 
       setTitle(""); setAuthor(""); setContent(""); setSelectedBook(null);
@@ -272,34 +227,17 @@ export default function App() {
       setCurrentMenu("home");
       toast.success(wasEditing ? "도서 정보가 수정되었습니다." : "도서가 등록되었습니다.");
     } catch (err) {
-<<<<<<< HEAD
       toast.error("도서 저장에 실패했습니다.");
-=======
-      toast.error(err.message || "도서 저장에 실패했습니다.");
->>>>>>> origin/dev
     }
   };
 
   const handleDelete = async (id) => {
     if (window.confirm("정말 이 책을 삭제하시겠습니까?")) {
-<<<<<<< HEAD
       await fetch(`${dbAddress}/${id}`, { method: "DELETE" });
       setSelectedBook(null); setDetailViewSource(null);
       if (randomBook?.id === id) setRandomBook(null);
       fetchBooks();
       toast.success("도서가 삭제되었습니다.");
-=======
-      try {
-        const res = await fetch(`${dbAddress}/${id}`, { method: "DELETE" });
-        if (!res.ok) throw new Error("도서 삭제 요청에 실패했습니다.");
-        setSelectedBook(null); setDetailViewSource(null);
-        if (randomBook?.id === id) setRandomBook(null);
-        fetchBooks();
-        toast.success("도서가 삭제되었습니다.");
-      } catch (err) {
-        toast.error(err.message || "도서 삭제에 실패했습니다.");
-      }
->>>>>>> origin/dev
     }
   };
 
@@ -326,10 +264,6 @@ export default function App() {
   };
 
   return (
-<<<<<<< HEAD
-=======
-    <>
->>>>>>> origin/dev
     <div style={{ padding: "20px", width: "100%", maxWidth: "1000px", margin: "0 auto", fontFamily: "sans-serif", background: "#fff", boxSizing: "border-box" }}>
       <Header currentMenu={currentMenu} onMenuChange={(menu) => { setCurrentMenu(menu); if (menu !== "mypage") handleCloseDetail(); }} searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
       
@@ -425,7 +359,6 @@ export default function App() {
           />
         </div>
       )}
-<<<<<<< HEAD
       <ToastContainer
         position="top-right"
         autoClose={3000}
@@ -439,22 +372,6 @@ export default function App() {
         transition={Bounce}
         limit={3}
       />
-=======
->>>>>>> origin/dev
     </div>
-    <ToastContainer
-      position="top-right"
-      autoClose={3000}
-      hideProgressBar={false}
-      newestOnTop
-      closeOnClick
-      pauseOnFocusLoss
-      draggable
-      pauseOnHover
-      theme="light"
-      transition={Bounce}
-      limit={3}
-    />
-    </>
   );
 }
