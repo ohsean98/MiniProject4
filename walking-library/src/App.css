@@ -1,17 +1,11 @@
-/* ==========================================================================
-   ✨ 작가지망생 서재 리뉴얼 - 고도화 스타일 시트
-   ========================================================================== */
 
-/* 1️⃣ 웹 애플리케이션 전체 배경 및 폰트 부드러움 최적화 */
 body {
-  background-color: #f8fafc; /* 연한 미색 배경으로 눈의 피로도 감소 */
-  color: #1e293b;
+  background-color: #f8fafc;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  letter-spacing: -0.02em; /* 한국어 가독성에 최적화된 자간 장평 */
+  letter-spacing: -0.02em; 
 }
 
-/* 2️⃣ 마이페이지 좌측 도서 목록 전용 스크롤바 커스텀 (디자이너 풍 요소를 더함) */
 div::-webkit-scrollbar {
   width: 6px;
   height: 6px;
