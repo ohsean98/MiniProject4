@@ -1,8 +1,7 @@
 //1.npm install로 의존성 설치
 //2. npm run dev로 vite 페이지 실행
-//3. walking-library 폴더 안에서 다음 내용 실행
-//4. npm install json-server@0.17.4로 json서버 의존성 설치
-//5. npx json-server --watch db.json으로 json 서버 실행
+//3. npm install json-server@0.17.4로 json서버 의존성 설치
+//4. npx json-server --watch db.json으로 json 서버 실행
 
 /* - 상태 관리 (메뉴 탭, 도서 목록 데이터, AI API 세팅 변수, 검색어 등)
  * - json-server 및 OpenAI Image API 연동 및 제어
@@ -14,6 +13,7 @@ import { ToastContainer, toast, Bounce } from "react-toastify";
 import Header from "./components/Header";
 import BookForm from "./components/BookForm";
 import BookDetail from "./components/BookDetail";
+import "react-toastify/dist/ReactToastify.css";
 
 const OPENAI_IMAGE_API_URL = "https://api.openai.com/v1/images/generations";
 
@@ -97,8 +97,6 @@ export default function App() {
     }
   };
 
-  // Initial book loading should run once when the app mounts.
-  // eslint-disable-next-line react-hooks/set-state-in-effect, react-hooks/exhaustive-deps
   useEffect(() => { fetchBooks(); }, []);
 
   
@@ -124,7 +122,48 @@ export default function App() {
     abortControllerRef.current = controller;
 
     try {
-      const prompt = buildBookCoverPrompt(title, author, content, bookGenre, coverStyle);
+      let prompt = buildBookCoverPrompt(title, author, content, bookGenre, coverStyle);
+      if (localImageBase64){
+        const pureBase64 = localImageBase64.split(",")[1];
+        const visionRes = await fetch("https://api.openai.com/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${apiKey.trim()}`
+        },
+        body: JSON.stringify({
+          model: "gpt-4o", // 이미지를 읽을 수 있는 AI 모델
+          messages: [
+            {
+              role: "user",
+              content: [
+                { 
+                  type: "text", 
+                  text: "Analyze this rough sketch/storyboard for a book cover. Describe its layout, composition, subject placement, and implied framing in English so that DALL-E 3 can replicate this exact composition. Keep it concise." 
+                },
+                {
+                  type: "image_url",
+                  image_url: {
+                    url: `data:image/jpeg;base64,${pureBase64}` // ◀ 여기에 부모가 쥔 Base64 전달!
+                  }
+                }
+              ]
+            }
+          ]
+        }),
+        signal: controller.signal
+      });
+
+      if (visionRes.ok) {
+        const visionData = await visionRes.json();
+        const sketchDescription = visionData.choices?.[0]?.message?.content;
+        
+        if (sketchDescription) {
+          // 3. GPT-4o가 분석해 준 콘티의 구도 정보를 기존 프롬프트 뒤에 강력하게 결합!
+          prompt += `\n\n[CRITICAL COMPOSITION GUIDE]: Replicate the exact composition and layout described here: ${sketchDescription}`;
+        }
+      }
+    }
       const openAiRes = await fetch(OPENAI_IMAGE_API_URL, {
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${apiKey.trim()}` },
@@ -143,9 +182,8 @@ export default function App() {
     } catch (err) {
       if (err.name === 'AbortError') {
         console.log("이미지 생성 취소됨");
-        toast.info("이미지 생성을 취소했습니다.");
       } else {
-        toast.error(`표지 생성 실패: ${err.message}`);
+        alert(`에러: ${err.message}`);
       }
     } finally {
       setIsGeneratingCover(false);
@@ -169,20 +207,18 @@ export default function App() {
 
     try {
       if (isEditing) {
-        const res = await fetch(`${dbAddress}/${selectedBook.id}`, {
+        await fetch(`${dbAddress}/${selectedBook.id}`, {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ ...selectedBook, ...payload }),
         });
-        if (!res.ok) throw new Error("도서 수정 요청에 실패했습니다.");
         setIsEditing(false);
       } else {
-        const res = await fetch(dbAddress, {
+        await fetch(dbAddress, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ ...payload, createdAt: nowISO }),
         });
-        if (!res.ok) throw new Error("도서 등록 요청에 실패했습니다.");
       }
 
       setTitle(""); setAuthor(""); setContent(""); setSelectedBook(null);
@@ -191,22 +227,17 @@ export default function App() {
       setCurrentMenu("home");
       toast.success(wasEditing ? "도서 정보가 수정되었습니다." : "도서가 등록되었습니다.");
     } catch (err) {
-      toast.error(err.message || "도서 저장에 실패했습니다.");
+      toast.error("도서 저장에 실패했습니다.");
     }
   };
 
   const handleDelete = async (id) => {
     if (window.confirm("정말 이 책을 삭제하시겠습니까?")) {
-      try {
-        const res = await fetch(`${dbAddress}/${id}`, { method: "DELETE" });
-        if (!res.ok) throw new Error("도서 삭제 요청에 실패했습니다.");
-        setSelectedBook(null); setDetailViewSource(null);
-        if (randomBook?.id === id) setRandomBook(null);
-        fetchBooks();
-        toast.success("도서가 삭제되었습니다.");
-      } catch (err) {
-        toast.error(err.message || "도서 삭제에 실패했습니다.");
-      }
+      await fetch(`${dbAddress}/${id}`, { method: "DELETE" });
+      setSelectedBook(null); setDetailViewSource(null);
+      if (randomBook?.id === id) setRandomBook(null);
+      fetchBooks();
+      toast.success("도서가 삭제되었습니다.");
     }
   };
 
@@ -233,7 +264,6 @@ export default function App() {
   };
 
   return (
-    <>
     <div style={{ padding: "20px", width: "100%", maxWidth: "1000px", margin: "0 auto", fontFamily: "sans-serif", background: "#fff", boxSizing: "border-box" }}>
       <Header currentMenu={currentMenu} onMenuChange={(menu) => { setCurrentMenu(menu); if (menu !== "mypage") handleCloseDetail(); }} searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
       
@@ -329,20 +359,19 @@ export default function App() {
           />
         </div>
       )}
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop
+        closeOnClick
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+        transition={Bounce}
+        limit={3}
+      />
     </div>
-    <ToastContainer
-      position="top-right"
-      autoClose={3000}
-      hideProgressBar={false}
-      newestOnTop
-      closeOnClick
-      pauseOnFocusLoss
-      draggable
-      pauseOnHover
-      theme="light"
-      transition={Bounce}
-      limit={3}
-    />
-    </>
   );
 }
