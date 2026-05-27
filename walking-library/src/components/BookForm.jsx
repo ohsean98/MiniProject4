@@ -3,7 +3,19 @@
  * - 알라딘 API 연동: 도서명 검색 및 선택 리스트 드롭다운 제공
  */
 
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
+import {
+  BookOpen,
+  CheckCircle2,
+  FilePenLine,
+  Image as ImageIcon,
+  ImageUp,
+  PenLine,
+  Settings,
+  Trash2,
+  X
+} from "lucide-react";
+import { useDropzone } from "react-dropzone";
 
 // 발급받으신 알라딘 TTBKey를 여기에 입력하세요.
 const ALADIN_TTB_KEY = "ttbyh9909201128001"; 
@@ -22,7 +34,7 @@ export default function BookForm({
   isEditing, onSave, onFinalSave, onCancel,
   isGenerating, onCancelGeneration,
   tempPreviewImage, setTempPreviewImage,
-  localImageBase64, setLocalImageBase64
+  setLocalImageBase64
 }) {
   const [localPreview, setLocalPreview] = useState(null);
   
@@ -77,14 +89,45 @@ export default function BookForm({
     setSearchTitle("");
   };
 
-  const handleLocalImageChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setLocalPreview(URL.createObjectURL(file));
-      const reader = new FileReader();
-      reader.onloadend = () => setLocalImageBase64(reader.result);
-      reader.readAsDataURL(file);
-    }
+  const handleLocalImageFile = useCallback((file) => {
+    if (!file) return;
+
+    setLocalPreview((previousPreview) => {
+      if (previousPreview) URL.revokeObjectURL(previousPreview);
+      return URL.createObjectURL(file);
+    });
+
+    const reader = new FileReader();
+    reader.onloadend = () => setLocalImageBase64(reader.result);
+    reader.readAsDataURL(file);
+  }, [setLocalImageBase64]);
+
+  const handleDrop = useCallback((acceptedFiles) => {
+    handleLocalImageFile(acceptedFiles[0]);
+  }, [handleLocalImageFile]);
+
+  const {
+    getRootProps,
+    getInputProps,
+    isDragActive,
+    isFocused,
+    fileRejections
+  } = useDropzone({
+    onDrop: handleDrop,
+    accept: { "image/*": [] },
+    multiple: false,
+  });
+
+  useEffect(() => {
+    return () => {
+      if (localPreview) URL.revokeObjectURL(localPreview);
+    };
+  }, [localPreview]);
+
+  const handleClearLocalImage = () => {
+    if (localPreview) URL.revokeObjectURL(localPreview);
+    setLocalPreview(null);
+    setLocalImageBase64("");
   };
 
   return (
@@ -128,8 +171,9 @@ export default function BookForm({
         </div>
       )}
 
-      <h3 style={{ marginTop: 0, textAlign: "center", marginBottom: "25px", color: "#333", fontSize: "22px", fontWeight: "bold" }}>
-        {isEditing ? "📝 도서 수정하기" : "✍️ 도서 등록하기"}
+      <h3 style={{ marginTop: 0, textAlign: "center", marginBottom: "25px", color: "#333", fontSize: "22px", fontWeight: "bold", display: "flex", alignItems: "center", justifyContent: "center", gap: "8px" }}>
+        {isEditing ? <FilePenLine size={23} aria-hidden="true" /> : <PenLine size={23} aria-hidden="true" />}
+        {isEditing ? "도서 수정하기" : "도서 등록하기"}
       </h3>
 
       <form onSubmit={(e) => { e.preventDefault(); onSave(); }} style={{ display: "flex", gap: "25px", width: "100%", alignItems: "flex-start" }}>
@@ -156,7 +200,7 @@ export default function BookForm({
               <img src={tempPreviewImage} alt="표지 미리보기" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
             ):(
               <>
-                <span style={{ fontSize: "40px", marginBottom: "10px" }}>🖼️</span>
+                <ImageIcon size={42} color="#94a3b8" style={{ marginBottom: "10px" }} aria-hidden="true" />
                 <strong style={{ fontSize: "16px", color: "#333", marginBottom: "5px" }}>생성 이미지 표시</strong>
                 <p style={{ fontSize: "12px", color: "#777", margin: 0, lineHeight: "1.5" }}>
                   오른쪽에서 설정을 마친 후 [미리보기]를 누르면<br />
@@ -169,7 +213,7 @@ export default function BookForm({
           {!tempPreviewImage && (
             <div style={{ 
               width: "100%", 
-              height: "250px", 
+              minHeight: "300px", 
               border: "1px solid #ddd", 
               borderRadius: "8px", 
               padding: "15px", 
@@ -177,43 +221,63 @@ export default function BookForm({
               boxSizing: "border-box",
               display: "flex",
               flexDirection: "column",
-              alignItems: "center"
+              alignItems: "center",
+              gap: "10px"
             }}>
-              <label style={{ display: "block", fontSize: "13px", fontWeight: "bold", color: "#555", marginBottom: "8px" }}>
-                🖼️ 원하는 도서 이미지 콘티 업로드하시면 콘티를 바탕으로 이미지 생성합니다! 
+              <label style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "6px", fontSize: "13px", fontWeight: "bold", color: "#555", marginBottom: "2px", textAlign: "center", lineHeight: "1.5" }}>
+                <ImageUp size={18} aria-hidden="true" />
+                <span>
+                  원하는 도서 이미지 콘티 업로드하시면<br />
+                  콘티를 바탕으로 이미지 생성합니다!
+                </span>
               </label>
               
-              {localPreview ? (
-                <div style={{ width: "100%", height: "100px", overflow: "hidden", borderRadius: "4px", marginBottom: "8px" }}>
-                  <img 
-                    src={localPreview} 
-                    alt="콘티 미리보기" 
-                    style={{ width: "100%", height: "100%", objectFit: "contain" }} 
-                  />
-                </div>
-              ) : (
-                <div style={{ display: "flex", flexDirection: "column", alignItems: "center", marginBottom: "8px" }}>
-                  <span style={{ fontSize: "40px" }}>🖼️</span>
-                  <p style={{ margin: 5, fontSize: "13px", color: "#777", fontWeight: "500" }}>
-                    파일을 업로드해주세요.
-                  </p>
-                </div>
+              <div
+                {...getRootProps()}
+                style={{
+                  width: "100%",
+                  minHeight: "170px",
+                  border: isDragActive || isFocused ? "2px dashed #ffa042" : "2px dashed #cbd5e1",
+                  borderRadius: "8px",
+                  background: isDragActive ? "#fff7ed" : "#f8fafc",
+                  boxSizing: "border-box",
+                  padding: "14px",
+                  marginBottom: "0",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  cursor: "pointer",
+                  transition: "border-color 0.2s ease, background 0.2s ease"
+                }}
+              >
+                <input {...getInputProps()} />
+                {localPreview ? (
+                  <div style={{ width: "100%", height: "138px", overflow: "hidden", borderRadius: "6px", background: "#fff" }}>
+                    <img 
+                      src={localPreview} 
+                      alt="업로드 이미지 미리보기" 
+                      style={{ width: "100%", height: "100%", objectFit: "contain" }} 
+                    />
+                  </div>
+                ) : (
+                  <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "6px", textAlign: "center" }}>
+                    <ImageUp size={34} color="#94a3b8" aria-hidden="true" />
+                    <strong style={{ fontSize: "13px", color: "#334155" }}>
+                      {isDragActive ? "이미지를 여기에 놓아주세요" : "이미지를 드래그하거나 클릭해 업로드"}
+                    </strong>
+                    <span style={{ fontSize: "11px", color: "#94a3b8" }}>PNG, JPG, WEBP 이미지 파일</span>
+                  </div>
+                )}
+              </div>
+              {fileRejections.length > 0 && (
+                <p style={{ margin: "0 0 8px 0", fontSize: "11px", color: "#dc3545" }}>
+                  이미지 파일만 업로드할 수 있습니다.
+                </p>
               )}
-
-              <input 
-                type="file" 
-                accept="image/*" 
-                onChange={handleLocalImageChange} 
-                value={localPreview ? undefined : ""} 
-                style={{ fontSize: "13px", width: "100%", marginBottom: "8px" }} 
-              />
                 {localPreview && (
                   <button
                     type="button"
-                    onClick={() => {
-                      setLocalPreview(null);
-                      setLocalImageBase64("");
-                    }}
+                    onClick={handleClearLocalImage}
                     style={{
                       padding: "6px 14px",
                       background: "#dc3545",
@@ -227,7 +291,10 @@ export default function BookForm({
                       width: "100%"
                     }}
                   >
-                    🗑️ 파일 삭제
+                    <span style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", gap: "5px" }}>
+                      <Trash2 size={13} aria-hidden="true" />
+                      파일 삭제
+                    </span>
                   </button>
                 )}
             </div>
@@ -235,7 +302,10 @@ export default function BookForm({
           
           {tempPreviewImage && (
             <div style={{ display: "flex", flexDirection: "column", gap: "10px", background: "#f4f9ff", padding: "15px", borderRadius: "8px", border: "1px solid #bae1ff" }}>
-              <p style={{ margin: "0 0 5px 0", fontSize: "13px", color: "#0056b3", fontWeight: "bold", textAlign: "center" }}>🎉 표지 매칭 완료! 등록하시겠습니까?</p>
+              <p style={{ margin: "0 0 5px 0", fontSize: "13px", color: "#0056b3", fontWeight: "bold", textAlign: "center", display: "flex", alignItems: "center", justifyContent: "center", gap: "6px" }}>
+                <CheckCircle2 size={16} aria-hidden="true" />
+                표지 매칭 완료! 등록하시겠습니까?
+              </p>
               <div style={{ display: "flex", gap: "8px" }}>
                 <button 
                   type="button" 
@@ -258,7 +328,10 @@ export default function BookForm({
                   onClick={() => setTempPreviewImage("")} 
                   style={{ flex: 1, padding: "10px 0", background: "#6c757d", color: "#fff", border: "none", borderRadius: "4px", cursor: "pointer", fontWeight: "bold", fontSize: "12px", whiteSpace: "nowrap" }}
                 >
-                  ❌ 취소
+                  <span style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", gap: "5px" }}>
+                    <X size={13} aria-hidden="true" />
+                    취소
+                  </span>
                 </button>
               </div>
             </div>
@@ -361,7 +434,12 @@ export default function BookForm({
 
           {/* OpenAI 상세 설정 */}
           <fieldset style={{ border: "1px solid #007bff", borderRadius: "8px", padding: "15px", background: "#f7faff", margin: 0 }}>
-            <legend style={{ color: "#007bff", fontWeight: "bold", fontSize: "13px", padding: "0 6px" }}>⚙️ OpenAI API & 표지 상세 설정</legend>
+            <legend style={{ color: "#007bff", fontWeight: "bold", fontSize: "13px", padding: "0 6px" }}>
+              <span style={{ display: "inline-flex", alignItems: "center", gap: "5px" }}>
+                <Settings size={14} aria-hidden="true" />
+                OpenAI API & 표지 상세 설정
+              </span>
+            </legend>
             <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
               
               <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
@@ -400,8 +478,8 @@ export default function BookForm({
                   <label style={{ fontSize: "12px", color: "#444" }}>이미지 품질</label>
                   <select value={imageQuality} onChange={(e) => setImageQuality(e.target.value)} disabled={!!tempPreviewImage} style={{ padding: "8px", borderRadius: "4px", border: "1px solid #ccc", background: "#fff", fontSize: "13px" }}>
                     <option value="low">low (빠른 생성)</option>
-                    <option value="medium">medium (고화질)</option>
-                    <option value="high">high (일반)</option>
+                    <option value="medium">medium (일반)</option>
+                    <option value="high">high (고화질)</option>
                   </select>
                 </div>
                 <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: "4px" }}>
@@ -441,7 +519,10 @@ export default function BookForm({
 
           {/* 줄거리 요약 */}
           <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
-            <label style={{ fontSize: "12px", color: "#666", fontWeight: "bold" }}>📖 줄거리 요약 (본문 내용)</label>
+            <label style={{ fontSize: "12px", color: "#666", fontWeight: "bold", display: "inline-flex", alignItems: "center", gap: "5px" }}>
+              <BookOpen size={14} aria-hidden="true" />
+              줄거리 요약 (본문 내용)
+            </label>
             <textarea
               placeholder="책의 줄거리를 입력하세요. 표지 생성의 근간 정보가 됩니다."
               value={content}

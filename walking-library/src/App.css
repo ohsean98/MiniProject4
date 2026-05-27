@@ -6,6 +6,20 @@ body {
   letter-spacing: -0.02em; 
 }
 
+.app-shell {
+  transition: box-shadow 0.25s ease, border-color 0.25s ease;
+}
+
+.brand-panel {
+  transition: border-color 0.25s ease, box-shadow 0.25s ease, transform 0.25s ease;
+}
+
+.brand-panel:hover {
+  border-color: #f59e0b !important;
+  box-shadow: 0 14px 30px rgba(245, 158, 11, 0.12);
+  transform: translateY(-2px);
+}
+
 div::-webkit-scrollbar {
   width: 6px;
   height: 6px;
@@ -24,21 +38,75 @@ div::-webkit-scrollbar-thumb:hover {
   background: #94a3b8;
 }
 
-/* 3️⃣ 홈 화면 도서 목록 그리드 카드 - 마우스 오버 시 반응형 피드백 애니메이션 */
-/* (기존 App.jsx의 card div들에 'book-card' 클래스를 주거나 CSS 선택자로 바인딩 가능) */
-div[style*="grid-template-columns"] > div {
-  transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1), 
-              box-shadow 0.3s ease !important;
+input,
+select,
+textarea {
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
 }
 
-div[style*="grid-template-columns"] > div:hover {
-  transform: translateY(-6px) scale(1.02) !important; /* 위로 부드럽게 떠오르는 효과 */
+input:hover,
+select:hover,
+textarea:hover {
+  border-color: #94a3b8 !important;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  border-color: #f59e0b !important;
+  box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.18);
+  outline: none;
+}
+
+input:disabled,
+select:disabled,
+textarea:disabled {
+  cursor: not-allowed;
+  opacity: 0.72;
+}
+
+.book-card {
+  transition: transform 0.24s cubic-bezier(0.25, 1, 0.5, 1), 
+              box-shadow 0.24s ease,
+              border-color 0.24s ease,
+              background-color 0.24s ease !important;
+}
+
+.book-card:hover {
+  transform: translateY(-6px) scale(1.02) !important;
   box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.08), 
               0 10px 10px -5px rgba(0, 0, 0, 0.04) !important;
-  border-color: #3b82f6 !important; /* 은은한 블루 보더 피드백 */
+  border-color: #f59e0b !important;
+  background-color: #fffaf0 !important;
 }
 
-/* 4️⃣ 버튼 컴포넌트 마우스 오버 시 미세한 명도 변화 및 누르는 느낌(Active) 부여 */
+.book-card:active {
+  transform: translateY(-2px) scale(0.99) !important;
+}
+
+.mypage-book-item {
+  transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease !important;
+}
+
+.mypage-book-item:hover {
+  background-color: #fff7ed !important;
+  border-color: #fb923c !important;
+  box-shadow: 0 8px 18px rgba(251, 146, 60, 0.14);
+  transform: translateX(4px);
+}
+
+.detail-link {
+  transition: color 0.18s ease, text-decoration-color 0.18s ease;
+  text-decoration: underline;
+  text-decoration-color: transparent;
+  text-underline-offset: 3px;
+}
+
+.detail-link:hover {
+  color: #f97316 !important;
+  text-decoration-color: currentColor;
+}
+
 button {
   transition: all 0.2s ease-in-out !important;
   position: relative;
@@ -46,14 +114,44 @@ button {
 }
 
 button:hover {
-  filter: brightness(0.92); /* 마우스 올리면 약간 어두워지며 피드백 */
+  filter: brightness(0.94);
+  box-shadow: 0 8px 16px rgba(15, 23, 42, 0.12);
 }
 
 button:active {
-  transform: scale(0.96) !important; /* 클릭하는 순간 싹 들어가는 생동감 부여 */
+  transform: scale(0.96) !important;
+  box-shadow: none;
 }
 
-/* 5️⃣ 이미지 생성 및 상세 화면 등장 시 부드러운 페이드인 효과 */
+button:focus-visible {
+  outline: 3px solid rgba(245, 158, 11, 0.38);
+  outline-offset: 2px;
+}
+
+.nav-tab:hover {
+  background-color: #fff7ed !important;
+  border-color: #fb923c !important;
+  color: #9a3412 !important;
+}
+
+.search-button:hover {
+  background-color: #f59e0b !important;
+}
+
+.delete-button:hover {
+  background: #fecaca !important;
+  color: #b91c1c !important;
+}
+
+.edit-button:hover {
+  background: #334155 !important;
+}
+
+.close-button:hover {
+  background: #e2e8f0 !important;
+  color: #0f172a !important;
+}
+
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -67,4 +165,15 @@ button:active {
 
 section {
   animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
 }

@@ -1,8 +1,21 @@
+import { BookOpen, Heart } from "lucide-react";
+
 export default function BookList({ books, selectedBook, onSelectBook, horizontal, emptyMessage = "등록된 도서가 없습니다." }) {
   return (
     <section style={{ flex: horizontal ? "none" : 1 }}>
-      <h3 style={{ marginTop: 0 }}>
-        {horizontal ? "❤️ 인기 도서 ❤️" : `📖 나의 도서 목록 (${books.length}권)`}
+      <h3 style={{ marginTop: 0, display: "inline-flex", alignItems: "center", justifyContent: "center", gap: "6px" }}>
+        {horizontal ? (
+          <>
+            <Heart size={18} fill="currentColor" aria-hidden="true" />
+            인기 도서
+            <Heart size={18} fill="currentColor" aria-hidden="true" />
+          </>
+        ) : (
+          <>
+            <BookOpen size={18} aria-hidden="true" />
+            나의 도서 목록 ({books.length}권)
+          </>
+        )}
       </h3>
       {books.length === 0 && (
         <p style={{ margin: 0, padding: "18px", border: "1px dashed #ccc", borderRadius: "6px", color: "#777", textAlign: "center", background: "#fafafa" }}>
