@@ -5,16 +5,13 @@ phases:
     runtime-versions:
       nodejs: 20
     commands:
-      - cd walking-library 
       - echo Installing source dependencies...
-      - npm install
+      - npm --prefix walking-library install 
   build:
     commands:
-      - cd walking-library 
       - echo Build started on `date`
-      - echo Building the React application...
-      - npm run build
+      - npm --prefix walking-library run build 
 artifacts:
   files:
     - '**/*'
-  base-directory: walking-library/dist 
+  base-directory: walking-library/dist
